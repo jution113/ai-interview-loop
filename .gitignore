@@ -1,0 +1,49 @@
+# OS and local IDE files
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+
+# Gradle and Java build output
+.gradle/
+/backend/build/
+/backend/out/
+
+# Frontend dependencies and generated output
+/frontend/node_modules/
+/frontend/dist/
+/frontend/build/
+/frontend/.vite/
+/frontend/coverage/
+
+# Local environment files and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Local interview data, databases, and runtime logs
+/data/
+/backend/data/
+/uploads/
+/backend/uploads/
+/recordings/
+/backend/recordings/
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.mv.db
+*.trace.db
+*.log
