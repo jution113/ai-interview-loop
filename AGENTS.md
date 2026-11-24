@@ -41,7 +41,7 @@
 
 ## 5. Git 작업 규칙
 
-- `docs/conventions.md`를 준수한다. 작업별 브랜치를 사용하고 변경 범위를 분리한다.
+- `docs/conventions.md`를 준수한다. `dev`에서 작업별 브랜치를 분기하고 변경 범위를 분리한다. 작업 브랜치는 `dev`에 병합하고, 통합 검증을 마친 `dev`를 `main`에 병합한다.
 - 기존 작업 및 변경 사항을 보존한다. 사용자 승인 없이 원격 push, PR 생성, 병합 또는 이력 재작성을 수행하지 않는다.
 - PR 작성 요청 시 기존 `.github/pull_request_template.md`를 사용한다.
 
