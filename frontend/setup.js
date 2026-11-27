@@ -2,9 +2,7 @@ const form = document.querySelector('#setup');
 const application = document.querySelector('#application');
 const research = document.querySelector('#research');
 const researchFiles = document.querySelector('#research-files');
-const confirmed = document.querySelector('#confirmed');
-const duration = document.querySelector('#duration');
-const result = document.querySelector('#result');
+const portfolio = document.querySelector('#portfolio');
 const requiredFiles = [application, research];
 
 let submitted = false;
@@ -24,12 +22,10 @@ function validateSetup() {
   for (const field of requiredFiles) {
     showError(field, missing.includes(field));
   }
-  const needsConfirmation = missing.length === 0 && !confirmed.checked;
-  showError(confirmed, needsConfirmation);
-  return missing[0] ?? (needsConfirmation ? confirmed : null);
+  return missing[0];
 }
 
-for (const field of requiredFiles) {
+for (const field of [...requiredFiles, portfolio]) {
   const clear = document.getElementById(`${field.id}-clear`);
   clear.addEventListener('click', () => {
     field.value = '';
@@ -38,9 +34,6 @@ for (const field of requiredFiles) {
   });
   field.addEventListener('change', () => {
     clear.hidden = field.files.length === 0;
-    confirmed.checked = false;
-    confirmed.disabled = requiredFiles.some(input => input.files.length === 0);
-    result.textContent = '';
     if (submitted) validateSetup();
   });
 }
@@ -53,23 +46,13 @@ research.addEventListener('change', () => {
   }));
 });
 
-confirmed.addEventListener('change', () => {
-  result.textContent = '';
-  if (submitted) validateSetup();
-});
-
-duration.addEventListener('change', () => { result.textContent = ''; });
-
 form.addEventListener('submit', event => {
-  event.preventDefault();
   submitted = true;
   const invalidField = validateSetup();
   if (invalidField) {
-    result.textContent = '';
+    event.preventDefault();
     invalidField.focus();
-    return;
   }
-  result.textContent = `모의 설정을 확인했습니다. 답변 제한 시간은 ${duration.value}초입니다.`;
 });
 
-document.querySelector('#submit').disabled = false;
+form.noValidate = true;

@@ -41,6 +41,7 @@ class InterviewSetupPageTests {
 		assertEquals(200, response.statusCode());
 		assertTrue(response.headers().firstValue("Content-Type").orElse("").contains(mediaType));
 		assertTrue(!response.body().isBlank());
+		assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-cache"));
 	}
 
 	private HttpResponse<String> get(HttpClient client, String path) throws Exception {
