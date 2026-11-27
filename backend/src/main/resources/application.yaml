@@ -1,3 +1,8 @@
 spring:
   application:
     name: ai-interview-loop
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-cache: true
