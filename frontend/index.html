@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>면접 설정 | AI Interview Loop</title>
+  <link rel="stylesheet" href="/setup.css">
+  <script type="module" src="/setup.js"></script>
+</head>
+<body>
+  <header class="site-header"><div class="container">AI Interview Loop</div></header>
+  <main class="container">
+    <h1>면접 설정</h1>
+    <p class="intro">지원 자료를 선택하고 답변 환경을 설정하세요.</p>
+    <form id="setup" novalidate aria-describedby="scope">
+      <div class="grid">
+        <section aria-labelledby="documents-title">
+          <h2 id="documents-title">지원 자료</h2>
+          <p class="hint">PDF, Markdown, TXT 파일을 선택하세요.</p>
+          <div class="file-field">
+            <label for="application">자기소개서 <small>필수</small></label>
+            <input id="application" type="file" accept=".pdf,.md,.markdown,.txt" required aria-describedby="application-error">
+            <button id="application-clear" class="clear" type="button" hidden>자기소개서 선택 지우기</button>
+            <p id="application-error" class="error" hidden>자기소개서를 선택하세요.</p>
+          </div>
+          <div class="file-field">
+            <label for="research">기업·직무 조사 자료 <small>필수</small></label>
+            <input id="research" type="file" accept=".pdf,.md,.markdown,.txt" multiple required aria-describedby="research-files research-error">
+            <ul id="research-files" class="files" aria-label="선택한 조사 자료"></ul>
+            <button id="research-clear" class="clear" type="button" hidden>조사 자료 선택 지우기</button>
+            <p id="research-error" class="error" hidden>기업·직무 조사 자료를 하나 이상 선택하세요.</p>
+          </div>
+          <div class="file-field">
+            <label for="portfolio">포트폴리오 <small>선택</small></label>
+            <input id="portfolio" type="file" accept=".pdf,.md,.markdown,.txt">
+          </div>
+          <div class="confirmation">
+            <h3>기업·직무 정보 확인</h3>
+            <p class="hint">모의 정보 · 예시 기업 / 백엔드 개발</p>
+            <label class="checkbox"><input id="confirmed" type="checkbox" aria-describedby="confirmed-error" disabled> 예시 기업·직무 정보를 확인했습니다.</label>
+            <p id="confirmed-error" class="error" hidden>기업·직무 정보를 확인하세요.</p>
+          </div>
+        </section>
+        <section aria-labelledby="environment-title">
+          <h2 id="environment-title">답변 환경</h2>
+          <label for="api-key">개인 API 키</label>
+          <input id="api-key" type="password" autocomplete="off" spellcheck="false" aria-describedby="key-hint">
+          <p id="key-hint" class="hint">가짜 키로 입력을 확인할 수 있습니다.</p>
+          <label for="duration">답변 제한 시간</label>
+          <select id="duration">
+            <option value="60" selected>60초</option>
+            <option value="90">90초</option>
+            <option value="120">120초</option>
+          </select>
+          <div class="confirmation">
+            <h3>마이크 점검</h3>
+            <p class="hint">모의 상태 · 실제 마이크 권한 및 음량 측정은 연동 전입니다.</p>
+          </div>
+        </section>
+      </div>
+      <div class="actions">
+        <p id="scope" class="hint">모의 설정 화면입니다. 파일과 키는 전송되지 않습니다.</p>
+        <button id="submit" type="submit" disabled>면접 시작</button>
+      </div>
+      <p id="result" role="status"></p>
+    </form>
+  </main>
+</body>
+</html>
