@@ -47,3 +47,7 @@ Thumbs.db
 *.mv.db
 *.trace.db
 *.log
+
+# Browser test artifacts
+/frontend/playwright-report/
+/frontend/test-results/
