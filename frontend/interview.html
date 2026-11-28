@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모의 면접 | AI Interview Loop</title>
+  <link rel="stylesheet" href="/setup.css">
+  <script type="module" src="/interview.js"></script>
+</head>
+<body>
+  <header class="site-header"><div class="container">AI Interview Loop</div></header>
+  <main class="container">
+    <h1>모의 면접</h1>
+    <p class="intro">질문과 답변 분석은 모의 데이터로 진행합니다.</p>
+    <section class="interview-panel" aria-label="면접 진행">
+      <p id="phase" role="status">면접을 불러오는 중입니다.</p>
+      <div id="question-panel" class="question-layout" hidden>
+        <div class="question-content">
+          <p id="question-number" class="hint"></p>
+          <h2 id="question"></h2>
+        </div>
+        <div class="interview-meter">
+          <p id="timer" class="timer" role="timer" aria-label="남은 시간" hidden></p>
+          <button id="answer-action" type="button" hidden></button>
+          <button id="end" class="secondary" type="button" hidden>면접 종료</button>
+          <div id="volume-placeholder" class="volume-placeholder" aria-hidden="true"></div>
+          <p class="hint">마이크 음량 · 모의 화면</p>
+        </div>
+      </div>
+      <p id="capture" class="hint" hidden>모의 음성 수집 중</p>
+      <div id="evaluation" hidden>
+        <h2>면접 분석</h2>
+        <p>모의 평가를 요청했습니다.</p>
+      </div>
+      <p id="request-error" class="error" role="alert" hidden></p>
+      <div class="actions">
+        <button id="retry" type="button" hidden>상태 다시 확인</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

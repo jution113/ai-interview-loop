@@ -32,7 +32,7 @@ tasks.named('test') {
 // Serve the browser files from the same Spring Boot process as the API.
 tasks.named('processResources') {
 	from('../frontend') {
-		include 'index.html', 'setup.css', 'setup.js'
+		include 'index.html', 'setup.css', 'setup.js', 'interview.html', 'interview.js'
 		into 'static'
 	}
 }

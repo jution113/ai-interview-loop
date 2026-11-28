@@ -32,7 +32,7 @@
 
 ### 검증 결과
 
-- 미검증
+- 로드맵 1.3의 모의 흐름에서 상태 전이, 중복 접수 방지와 새로고침 후 상태 동기화를 자동화 검증했다. 개발자 직접 검증(TC-10)도 통과했다. [Issue #4](https://github.com/jution113/ai-interview-loop/issues/4)
 
 ## 4. 검토한 대안 (Alternatives Considered)
 
