@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-final class MockInterview {
+class MockInterview {
 
 	private static final List<String> QUESTIONS = List.of(
 			"지원 직무에 관심을 갖게 된 계기는 무엇인가요?",
@@ -80,7 +80,12 @@ final class MockInterview {
 	}
 
 	enum Phase {
-		PREPARING, ANSWERING, ANALYZING, COMPLETED, ENDED, INTERRUPTED;
+		PREPARING,   // 질문을 표시하고 답변을 준비하는 중
+		ANSWERING,   // 답변을 받는 중
+		ANALYZING,   // 접수한 답변의 모의 분석을 처리하는 중
+		COMPLETED,   // 마지막 질문까지 진행해 정상 종료
+		ENDED,       // 사용자가 면접을 직접 종료
+		INTERRUPTED; // 처리 오류로 면접이 중단됨
 
 		boolean isTerminal() {
 			return this == COMPLETED || this == ENDED || this == INTERRUPTED;
@@ -88,11 +93,19 @@ final class MockInterview {
 	}
 
 	enum Event {
-		START_ANSWER, PREPARATION_EXPIRED,
-		FINISH_ANSWER, ANSWER_EXPIRED, ANALYSIS_COMPLETED, END_INTERVIEW, PROCESSING_FAILED
+		START_ANSWER,        // 사용자가 ‘바로 답변’을 누름
+		PREPARATION_EXPIRED, // 준비 시간이 만료됨
+		FINISH_ANSWER,       // 사용자가 ‘답변 완료’를 누름
+		ANSWER_EXPIRED,      // 답변 시간이 만료됨
+		ANALYSIS_COMPLETED,  // 모의 답변 분석이 끝나 다음 질문 또는 정상 종료로 진행
+		END_INTERVIEW,       // 사용자가 ‘면접 종료’를 누름
+		PROCESSING_FAILED    // 처리 중 오류가 발생해 면접을 중단함
 	}
 
-	enum Evaluation { NOT_REQUESTED, REQUESTED }
+	enum Evaluation {
+		NOT_REQUESTED, // 최종 평가를 요청하지 않은 상태
+		REQUESTED      // 최종 모의 평가를 요청한 상태
+	}
 
 	record State(UUID id, Phase phase, int questionNumber, String question,
 			Long remainingMillis, long version, int acceptedAnswers, Evaluation evaluation) {}

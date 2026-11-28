@@ -3,7 +3,9 @@ package io.github.jution113.ai_interview_loop;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,25 +36,25 @@ class InterviewFlowTests {
 	@Test
 	@DisplayName("TC-01: normal transitions and independent evaluation request")
 	void completesInterview() {
-		var first = start(90);
+		MockInterview.State first = start(90);
 		assertEquals(PREPARING, first.phase());
 		assertTrue(first.remainingMillis() > 9000 && first.remainingMillis() <= 10000);
 
-		var answering = send(first, PREPARATION_EXPIRED);
+		MockInterview.State answering = send(first, PREPARATION_EXPIRED);
 		assertEquals(ANSWERING, answering.phase());
 		assertEquals(90000L, answering.remainingMillis());
 
-		var analyzing = send(answering, ANSWER_EXPIRED);
+		MockInterview.State analyzing = send(answering, ANSWER_EXPIRED);
 		assertEquals(ANALYZING, analyzing.phase());
 		assertEquals(1, analyzing.acceptedAnswers());
 
-		var second = send(analyzing, ANALYSIS_COMPLETED);
+		MockInterview.State second = send(analyzing, ANALYSIS_COMPLETED);
 		assertEquals(PREPARING, second.phase());
 		assertEquals(10000L, second.remainingMillis());
 		assertEquals(2, second.questionNumber());
 		assertNotEquals(first.question(), second.question());
 
-		var completed = send(send(answering(second), FINISH_ANSWER), ANALYSIS_COMPLETED);
+		MockInterview.State completed = send(send(answering(second), FINISH_ANSWER), ANALYSIS_COMPLETED);
 		assertEquals(COMPLETED, completed.phase());
 		assertEquals(2, completed.acceptedAnswers());
 		assertEquals(MockInterview.Evaluation.REQUESTED, completed.evaluation());
@@ -61,15 +63,15 @@ class InterviewFlowTests {
 	@Test
 	@DisplayName("TC-02: invalid phase and stale question events cannot change state")
 	void ignoresInvalidAndStaleEvents() {
-		var first = start(60);
-		var ignored = send(first, FINISH_ANSWER);
+		MockInterview.State first = start(60);
+		MockInterview.State ignored = send(first, FINISH_ANSWER);
 		assertEquals(PREPARING, ignored.phase());
 		assertEquals(first.version(), ignored.version());
 		assertEquals(0, ignored.acceptedAnswers());
-		var firstAnswer = answering(first);
-		var second = send(send(firstAnswer, FINISH_ANSWER), ANALYSIS_COMPLETED);
-		var secondAnswer = answering(second);
-		var stale = send(firstAnswer, FINISH_ANSWER);
+		MockInterview.State firstAnswer = answering(first);
+		MockInterview.State second = send(send(firstAnswer, FINISH_ANSWER), ANALYSIS_COMPLETED);
+		MockInterview.State secondAnswer = answering(second);
+		MockInterview.State stale = send(firstAnswer, FINISH_ANSWER);
 
 		assertEquals(ANSWERING, stale.phase());
 		assertEquals(secondAnswer.version(), stale.version());
@@ -80,15 +82,15 @@ class InterviewFlowTests {
 	@Test
 	@DisplayName("TC-03: competing completion and expiration accept exactly one answer")
 	void acceptsAnswerOnce() throws Exception {
-		var preparing = start(120);
-		var started = race(preparing, START_ANSWER, PREPARATION_EXPIRED);
-		for (var state : started) {
+		MockInterview.State preparing = start(120);
+		List<MockInterview.State> started = race(preparing, START_ANSWER, PREPARATION_EXPIRED);
+		for (MockInterview.State state : started) {
 			assertEquals(ANSWERING, state.phase());
 			assertEquals(preparing.version() + 1, state.version());
 			assertEquals(0, state.acceptedAnswers());
 		}
-		var answering = started.getFirst();
-		for (var state : race(answering, FINISH_ANSWER, ANSWER_EXPIRED)) {
+		MockInterview.State answering = started.getFirst();
+		for (MockInterview.State state : race(answering, FINISH_ANSWER, ANSWER_EXPIRED)) {
 			assertEquals(ANALYZING, state.phase());
 			assertEquals(1, state.acceptedAnswers());
 			assertEquals(answering.version() + 1, state.version());
@@ -97,13 +99,13 @@ class InterviewFlowTests {
 
 	private List<MockInterview.State> race(MockInterview.State state,
 			MockInterview.Event first, MockInterview.Event second) throws Exception {
-		var barrier = new CyclicBarrier(2);
-		try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-			var clicked = executor.submit(() -> {
+		CyclicBarrier barrier = new CyclicBarrier(2);
+		try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+			Future<MockInterview.State> clicked = executor.submit(() -> {
 				barrier.await(5, TimeUnit.SECONDS);
 				return send(state, first);
 			});
-			var expired = executor.submit(() -> {
+			Future<MockInterview.State> expired = executor.submit(() -> {
 				barrier.await(5, TimeUnit.SECONDS);
 				return send(state, second);
 			});
@@ -114,9 +116,9 @@ class InterviewFlowTests {
 	@Test
 	@DisplayName("TC-04: manual termination and interruption never request evaluation")
 	void stopsWithoutEvaluation() {
-		for (var event : new MockInterview.Event[]{END_INTERVIEW, PROCESSING_FAILED}) {
-			var analyzing = send(answering(start(60)), FINISH_ANSWER);
-			var stopped = send(analyzing, event);
+		for (MockInterview.Event event : new MockInterview.Event[]{END_INTERVIEW, PROCESSING_FAILED}) {
+			MockInterview.State analyzing = send(answering(start(60)), FINISH_ANSWER);
+			MockInterview.State stopped = send(analyzing, event);
 			assertEquals(event == END_INTERVIEW ? ENDED : INTERRUPTED, stopped.phase());
 			assertEquals(MockInterview.Evaluation.NOT_REQUESTED, stopped.evaluation());
 			assertEquals(stopped, send(analyzing, ANALYSIS_COMPLETED));

@@ -29,7 +29,7 @@ class InterviewController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported answer duration");
 		}
 
-		var interview = new MockInterview(seconds);
+		MockInterview interview = new MockInterview(seconds);
 		interviews.put(interview.id(), interview);
 		return interview.snapshot(Instant.now());
 	}
@@ -48,7 +48,7 @@ class InterviewController {
 	}
 
 	private MockInterview find(UUID id) {
-		var interview = interviews.get(id);
+		MockInterview interview = interviews.get(id);
 		if (interview == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Interview unavailable");
 		}

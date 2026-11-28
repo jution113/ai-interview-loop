@@ -24,8 +24,8 @@ class InterviewSetupPageTests {
 	@Test
 	@DisplayName("TC-01: Spring Boot serves the setup page and its static assets")
 	void servesSetupPageAndAssets() throws Exception {
-		try (var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()) {
-			var page = get(client, "/");
+		try (HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()) {
+			HttpResponse<String> page = get(client, "/");
 			assertEquals(200, page.statusCode());
 			assertTrue(page.body().contains("면접 설정"));
 			assertTrue(page.body().contains("href=\"/setup.css\""));
@@ -37,7 +37,7 @@ class InterviewSetupPageTests {
 	}
 
 	private void assertAsset(HttpClient client, String path, String mediaType) throws Exception {
-		var response = get(client, path);
+		HttpResponse<String> response = get(client, path);
 		assertEquals(200, response.statusCode());
 		assertTrue(response.headers().firstValue("Content-Type").orElse("").contains(mediaType));
 		assertTrue(!response.body().isBlank());
@@ -45,7 +45,7 @@ class InterviewSetupPageTests {
 	}
 
 	private HttpResponse<String> get(HttpClient client, String path) throws Exception {
-		var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+		HttpRequest request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
 				.timeout(Duration.ofSeconds(5))
 				.build();
 		return client.send(request, HttpResponse.BodyHandlers.ofString());
